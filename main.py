@@ -113,6 +113,12 @@ class Engine_v1 (object):
         if 106 in self.keys_down and 310 in self.keys_down:
             if self.keys_down[310] <= self.keys_down[106]:# Cmd has to be pushed first
                 self.new_game()
+
+        if (pygame.K_RCTRL in self.keys_down or pygame.K_LCTRL in self.keys_down) and pygame.K_q in self.keys_down:
+            quit()
+
+        if (pygame.K_RCTRL in self.keys_down or pygame.K_LCTRL in self.keys_down) and pygame.K_n in self.keys_down:
+            self.new_game()
     
     def new_game(self):
         self.game.__init__()
@@ -137,6 +143,9 @@ class Engine_v1 (object):
                 
                 elif event.type == MOUSEMOTION:
                     self.handle_mousemove(event)
+                
+                elif event.type == pygame.QUIT:
+                    quit()
                 
                 else:
                     pass
