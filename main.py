@@ -44,7 +44,7 @@ class reversiGUI():
 
     def quit(self):
         self.run = 0
-        game.abort()
+        self.game.abort()
 
     def newGame(self):
         pass
@@ -55,16 +55,23 @@ class reversiGUI():
     def checkKeyPressed(self):
         self.keys = pygame.key.get_pressed()
         eventList = pygame.event.get()
+        # Cmd + Q
+        if 113 in self.keys and 310 in self.keys:
+            self.quit()
+        
+        # Cmd + N
+        if 106 in self.keys and 310 in self.keys:
+            self.newGame()
 
         if (pygame.K_RCTRL in self.keys or pygame.K_LCTRL in self.keys) and pygame.K_q in self.keys:
-            quit()
+            self.quit()
 
         if (pygame.K_RCTRL in self.keys or pygame.K_LCTRL in self.keys) and pygame.K_n in self.keys:
             self.newGame()
 
         for event in eventList:
             if event.type == pygame.QUIT:
-                quit()
+                self.quit()
 
             if event.type == MOUSEBUTTONUP:
                 x, y = event.pos

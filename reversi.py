@@ -54,3 +54,5 @@ class Reversi:
 
     def abort(self):
         self.run = False
+        self.player1.gameEnd()
+        self.player2.gameEnd()

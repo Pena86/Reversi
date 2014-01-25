@@ -9,11 +9,11 @@ class Game_ai:
         self.board = []
         self.player = -1
 
-    def gameStart(self, palyerNo):
+    def gameStart(self, playerNo):
         """Method to call when game round starts
         """
         self.run = True
-        self.player = palyerNo
+        self.player = playerNo
     
     def makeMove(self, turn, board, makeMoveCallBack):
         """Method o call when it's time to make a move
