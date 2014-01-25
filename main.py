@@ -1,11 +1,8 @@
-import pygame, random, sys, time, math
-from pygame.locals import *
-import ai, reversi, tests
-import os
+#!python3
 
-def quit():
-    pygame.quit()
-    sys.exit()
+import pygame, random, sys, time, math, os
+from pygame.locals import *
+import reversi, ai, humanPlayer
 
 COUNTER_SIZE = 40
 TILE_SIZE = 50
@@ -15,28 +12,24 @@ FPS = 40
 WINDOWWIDTH = TILE_SIZE * 8
 WINDOWHEIGHT = TILE_SIZE * 8
 
-class Engine_v1 (object):
+class reversiGUI():
+    """Reversi game with graphic user interface
+    Some of this code is not mine. I have taken some parts from: https://github.com/Teifion/Reversi Thanks to Teifion for good example!
+    """
     def __init__(self):
-        super(Engine_v1, self).__init__()
         self.resources = {}
-        self.keys_down = {}
-        
-        self.game = reversi.Reversi()
-    
-    def startup(self):
-        # set up pygame, the window, and the mouse cursor
+        self.keys = []
+        self.game = reversi.Reversi(self.moveMade)
+        self.player1 = humanPlayer.Human(self.checkKeyPressed)
+        self.player2 = ai.Game_ai()
+        self.run = 0
+
+    def startRound(self):
+        self.run = 1
         pygame.init()
         self.main_clock = pygame.time.Clock()
         self.surface = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
         pygame.display.set_caption('Reversi')
-        # pygame.mouse.set_visible(False)
-
-        # set up fonts
-        font = pygame.font.SysFont(None, 48)
-
-        # set up sounds
-        # gameOverSound = pygame.mixer.Sound('gameover.wav')
-        # pygame.mixer.music.load('background.mid')
 
         # set up images
         self.resources['board'] = pygame.image.load('media/board.png')
@@ -44,6 +37,44 @@ class Engine_v1 (object):
         self.resources['white'] = pygame.image.load('media/white.png')
         
         self.draw_board()
+
+        self.game.roundStart(self.player1, self.player2)
+
+        pygame.quit()
+
+    def quit(self):
+        self.run = 0
+        game.abort()
+
+    def newGame(self):
+        pass
+
+    def moveMade(self):
+        self.draw_board()
+
+    def checkKeyPressed(self):
+        self.keys = pygame.key.get_pressed()
+        eventList = pygame.event.get()
+
+        if (pygame.K_RCTRL in self.keys or pygame.K_LCTRL in self.keys) and pygame.K_q in self.keys:
+            quit()
+
+        if (pygame.K_RCTRL in self.keys or pygame.K_LCTRL in self.keys) and pygame.K_n in self.keys:
+            self.newGame()
+
+        for event in eventList:
+            if event.type == pygame.QUIT:
+                quit()
+
+            if event.type == MOUSEBUTTONUP:
+                x, y = event.pos
+                tx = int(math.floor(x/TILE_SIZE))
+                ty = int(math.floor(y/TILE_SIZE))
+                if not self.game.moveTo(tx, ty):
+                    print ("Wrong move")
+                else:
+                    return True
+        return False
     
     def drawText(self, text, font, surface, x, y):
         textobj = font.render(text, 1, (0,0,0))
@@ -69,104 +100,17 @@ class Engine_v1 (object):
         
         # Has a victory occurred?
         font = pygame.font.SysFont("Helvetica", 48)
-        if self.game.victory == -1:
+        if self.game.winner == -1:
             self.drawText("Stalemate", font, self.surface, 95, 10)
-        if self.game.victory == 1:
+        if self.game.winner == 1:
             self.drawText("Victory to White", font, self.surface, 38, 10)
-        if self.game.victory == 2:
+        if self.game.winner == 2:
             self.drawText("Victory to Black", font, self.surface, 39, 10)
         
         pygame.display.update()
-    
-    def handle_keydown(self, event):
-        self.keys_down[event.key] = time.time()
-        self.test_for_keyboard_commands()
 
-    def handle_keyup(self, event):
-        del(self.keys_down[event.key])
-
-    def handle_mousedown(self, event):
-        pass
-
-    def handle_mouseup(self, event):
-        x, y = event.pos
-        tx = int(math.floor(x/TILE_SIZE))
-        ty = int(math.floor(y/TILE_SIZE))
-        
-        try:
-            self.game.player_move(tx, ty)
-        except reversi.Illegal_move as e:
-            print("Illegal move")
-        except Exception as e:
-            raise
-
-    def handle_mousemove(self, event):
-        pass
-
-    def test_for_keyboard_commands(self):
-        # Cmd + Q
-        if 113 in self.keys_down and 310 in self.keys_down:
-            if self.keys_down[310] <= self.keys_down[113]:# Cmd has to be pushed first
-                quit()
-        
-        # Cmd + N
-        if 106 in self.keys_down and 310 in self.keys_down:
-            if self.keys_down[310] <= self.keys_down[106]:# Cmd has to be pushed first
-                self.new_game()
-
-        if (pygame.K_RCTRL in self.keys_down or pygame.K_LCTRL in self.keys_down) and pygame.K_q in self.keys_down:
-            quit()
-
-        if (pygame.K_RCTRL in self.keys_down or pygame.K_LCTRL in self.keys_down) and pygame.K_n in self.keys_down:
-            self.new_game()
-    
-    def new_game(self):
-        self.game.__init__()
-    
-    def start(self):
-        self.startup()
-        self.new_game()
-        
-        while True:
-            for event in pygame.event.get():
-                if event.type == KEYDOWN:
-                    self.handle_keydown(event)
-                
-                elif event.type == KEYUP:
-                    self.handle_keyup(event)
-                
-                elif event.type == MOUSEBUTTONUP:
-                    self.handle_mouseup(event)
-                
-                elif event.type == MOUSEBUTTONDOWN:
-                    self.handle_mousedown(event)
-                
-                elif event.type == MOUSEMOTION:
-                    self.handle_mousemove(event)
-                
-                elif event.type == pygame.QUIT:
-                    quit()
-                
-                else:
-                    pass
-                    # print(event)
-            
-            # Turn based game so we don't need to always update
-            if self.game.has_changed:
-                self.draw_board()
-                self.game.has_changed = False
-            
-            if self.game.ai_is_ready:
-                self.game.ai_move()
-            
-            self.main_clock.tick(FPS)
-        
-        quit()
 
 if __name__ == '__main__':
-    if len(sys.argv) > 1 and sys.argv[1] == 'test':
-        os.system('python tests.py')
-    else:
-        ge = Engine_v1()
-        ge.start()
-    
+    ui = reversiGUI()
+    ui.startRound()
+    sys.exit()
