@@ -5,7 +5,9 @@ class Reversi:
     def __init__(self, callBack):
         self.ui = callBack
 
-    def setup(self):
+    def roundStart(self, pl1, pl2):
+        """Create a new game and start playing
+        """
         self.run = True
         self.winner = 0
         self.board = [[0 for x in range(8)] for x in range(8)]
@@ -18,17 +20,14 @@ class Reversi:
 
         self.turn = 1
         self.player = 1
-        self.player1 = None
-        self.player2 = None
 
-    def roundStart(self, pl1, pl2):
-        """Reversi game round start
-        """
         self.player1 = pl1
         self.player2 = pl2
 
         self.player1.gameStart(1)
         self.player2.gameStart(2)
+
+        self.ui()
 
         while self.run:
             # ui check buttons
@@ -37,9 +36,11 @@ class Reversi:
             if self.player == 1:
                 self.player1.makeMove(self.turn, self.board, self.moveTo)
                 self.player = 2
+                self.turn += 1
             else:
                 self.player2.makeMove(self.turn, self.board, self.moveTo)
                 self.player = 1
+                self.turn += 1
 
             # ui draw board
             self.winner = self.checkGameEnd()
@@ -51,7 +52,6 @@ class Reversi:
         """
         if x != None and y != None and self.board[x][y] == 0 and self.validMove(x, y, self.player):
             self.movesMade.append([self.turn, self.player, [x,y]])
-            self.turn += 1
             self.ui()
             return True
         return False
@@ -112,12 +112,14 @@ class Reversi:
         return []
 
     def checkGameEnd(self):
+        """Checks if game has come to the end.
+        """
         allTiles = [item for sublist in self.board for item in sublist]
         
         emptyTiles = sum(1 for tile in allTiles if tile == 0)
         whiteTiles = sum(1 for tile in allTiles if tile == 1)
         blackTiles = sum(1 for tile in allTiles if tile == 2)
-        if not (emptyTiles and whiteTiles and blackTiles):
+        if (not (emptyTiles and whiteTiles and blackTiles)) or self.turn > 80:
             if whiteTiles > blackTiles: #pl1 has won
                 return 1
             elif whiteTiles < blackTiles: #pl2 has won

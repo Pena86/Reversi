@@ -35,11 +35,8 @@ class reversiGUI():
     def startRound(self):
         print ("[turn, player, [x, y]]")
         self.startGame = 0
-        self.game.setup()
         self.run = 1
         self.main_clock = pygame.time.Clock()
-        
-        self.draw_board()
 
         self.game.roundStart(self.player1, self.player2)
         self.draw_board()
@@ -58,7 +55,8 @@ class reversiGUI():
         self.game.abort()
 
     def moveMade(self):
-        print (self.game.movesMade[-1])
+        if len(self.game.movesMade) > 0:
+            print (self.game.movesMade[-1])
         self.draw_board()
 
     def checkKeyPressed(self):
