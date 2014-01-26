@@ -112,4 +112,16 @@ class Reversi:
         return []
 
     def checkGameEnd(self):
+        allTiles = [item for sublist in self.board for item in sublist]
+        
+        emptyTiles = sum(1 for tile in allTiles if tile == 0)
+        whiteTiles = sum(1 for tile in allTiles if tile == 1)
+        blackTiles = sum(1 for tile in allTiles if tile == 2)
+        if not (emptyTiles and whiteTiles and blackTiles):
+            if whiteTiles > blackTiles: #pl1 has won
+                return 1
+            elif whiteTiles < blackTiles: #pl2 has won
+                return 2
+            else:                           #draw
+                return -1
         return False
