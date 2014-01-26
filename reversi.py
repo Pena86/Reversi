@@ -3,6 +3,9 @@ class Reversi:
     """Reversi game logig class
     """
     def __init__(self, callBack):
+        self.ui = callBack
+
+    def setup(self):
         self.run = True
         self.winner = 0
         self.board = [[0 for x in range(8)] for x in range(8)]
@@ -17,7 +20,6 @@ class Reversi:
         self.player = 1
         self.player1 = None
         self.player2 = None
-        self.ui = callBack
 
     def roundStart(self, pl1, pl2):
         """Reversi game round start
@@ -40,16 +42,18 @@ class Reversi:
                 self.player = 1
 
             # ui draw board
-            pass
+            self.winner = self.checkGameEnd()
+            if self.winner:
+                self.run = False
 
     def moveTo(self, x, y):
         """Method for players to call when making a move in the game
         """
         if x != None and y != None and self.board[x][y] == 0 and self.validMove(x, y, self.player):
+            self.movesMade.append([self.turn, self.player, [x,y]])
             self.turn += 1
             self.ui()
             return True
-
         return False
 
     def abort(self):
@@ -83,8 +87,6 @@ class Reversi:
             for spot in piecesToFlip:
                 self.board[spot[0]][spot[1]] = player
             return True
-
-
         return False
 
     def checkDirection(self, x, y, dx, dy, player, opponent):
@@ -107,5 +109,7 @@ class Reversi:
 
             x += dx
             y += dy
-            pass
         return []
+
+    def checkGameEnd(self):
+        return False

@@ -14,7 +14,6 @@ WINDOWHEIGHT = TILE_SIZE * 8
 
 class reversiGUI():
     """Reversi game with graphic user interface
-    Some of this code is not mine. I have taken some parts from: https://github.com/Teifion/Reversi Thanks to Teifion for good example!
     """
     def __init__(self):
         self.resources = {}
@@ -23,11 +22,8 @@ class reversiGUI():
         self.player1 = humanPlayer.Human(self.checkKeyPressed)
         self.player2 = ai.Game_ai()
         self.run = 0
+        self.startGame = 1
 
-    def startRound(self):
-        self.run = 1
-        pygame.init()
-        self.main_clock = pygame.time.Clock()
         self.surface = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
         pygame.display.set_caption('Reversi')
 
@@ -35,41 +31,56 @@ class reversiGUI():
         self.resources['board'] = pygame.image.load('media/board.png')
         self.resources['black'] = pygame.image.load('media/black.png')
         self.resources['white'] = pygame.image.load('media/white.png')
+
+    def startRound(self):
+        print ("[turn, player, [x, y]]")
+        self.startGame = 0
+        self.game.setup()
+        self.run = 1
+        self.main_clock = pygame.time.Clock()
         
         self.draw_board()
 
         self.game.roundStart(self.player1, self.player2)
+        self.draw_board()
 
-        pygame.quit()
+        while self.run:
+            time.sleep(0.1)
+            self.checkKeyPressed()
 
     def quit(self):
         self.run = 0
         self.game.abort()
 
     def newGame(self):
-        pass
+        self.startGame = 1
+        self.run = 0
+        self.game.abort()
 
     def moveMade(self):
+        print (self.game.movesMade[-1])
         self.draw_board()
 
     def checkKeyPressed(self):
         self.keys = pygame.key.get_pressed()
         eventList = pygame.event.get()
-        # Cmd + Q
-        if 113 in self.keys and 310 in self.keys:
-            self.quit()
-        
-        # Cmd + N
-        if 106 in self.keys and 310 in self.keys:
-            self.newGame()
-
-        if (pygame.K_RCTRL in self.keys or pygame.K_LCTRL in self.keys) and pygame.K_q in self.keys:
-            self.quit()
-
-        if (pygame.K_RCTRL in self.keys or pygame.K_LCTRL in self.keys) and pygame.K_n in self.keys:
-            self.newGame()
 
         for event in eventList:
+            if event.type == KEYDOWN:
+                # Cmd + Q
+                if event.key == 113 and self.keys[310]:
+                    self.quit()
+                
+                # Cmd + N
+                if event.key == 106 and self.keys[310]:
+                    self.newGame()
+
+                if event.key == pygame.K_q and (self.keys[pygame.K_RCTRL] or self.keys[pygame.K_LCTRL]):
+                    self.quit()
+
+                if event.key == pygame.K_n and (self.keys[pygame.K_RCTRL] or self.keys[pygame.K_LCTRL]):
+                    self.newGame()
+
             if event.type == pygame.QUIT:
                 self.quit()
 
@@ -119,5 +130,8 @@ class reversiGUI():
 
 if __name__ == '__main__':
     ui = reversiGUI()
-    ui.startRound()
+    pygame.init()
+    while ui.startGame:
+        ui.startRound()
+    pygame.quit()
     sys.exit()
