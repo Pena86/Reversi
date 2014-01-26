@@ -1,12 +1,12 @@
-import time
+import time, random
 
-class Human:
-    """Class for human players
+class Game_ai:
+    """Example Ai class
     """
-    def __init__(self, callBack):
+    def __init__(self):
         self.move = (-1,-1)
         self.run = False
-        self.checkKeyPressed = callBack
+        self.board = []
         self.player = -1
 
     def gameStart(self, playerNo):
@@ -15,18 +15,18 @@ class Human:
         self.run = True
         self.player = playerNo
     
-    def makeMove(self, turn, board, validMoves, makeMoveCallBack):
+    def makeMove(self, turnNo, boardSituation, validMoves, makeMoveCallBack):
         """Method to call when it's time to make a move
         """
-        turn = 1
-        while turn and self.run:
-            time.sleep(0.1)
-            if self.checkKeyPressed():
-                turn = 0
-        pass
+        time.sleep(0.1)
+        self.board = boardSituation
+
+        if len(validMoves):
+            makeMoveCallBack(validMoves[random.randrange(len(validMoves))])
+        else:
+            print ("Randomizer: No valid moves")
 
     def gameEnd(self):
         """Method to call when game roun ends
         """
         self.run = False
-

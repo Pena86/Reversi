@@ -15,17 +15,17 @@ class Game_ai:
         self.run = True
         self.player = playerNo
     
-    def makeMove(self, turn, board, makeMoveCallBack):
-        """Method o call when it's time to make a move
+    def makeMove(self, turnNo, boardSituation, validMoves, makeMoveCallBack):
+        """Method to call when it's time to make a move
         """
         time.sleep(0.1)
-        self.board = board
+        self.board = boardSituation
         
         changes = {}
         
         for x in range(0,8):
             for y in range(0,8):
-                if board[x][y] == 0:
+                if self.board[x][y] == 0:
                     c = self.place_piece(x, y, live_mode=False)
                     if c > 0:
                         changes[(x,y)] = c

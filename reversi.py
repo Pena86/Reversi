@@ -2,8 +2,9 @@
 class Reversi:
     """Reversi game logig class
     """
-    def __init__(self, callBack):
-        self.ui = callBack
+    def __init__(self, movesCallBack, buttonsCheck):
+        self.movesCallBack = movesCallBack
+        self.buttonsCheck = buttonsCheck
 
     def roundStart(self, pl1, pl2):
         """Create a new game and start playing
@@ -27,32 +28,36 @@ class Reversi:
         self.player1.gameStart(1)
         self.player2.gameStart(2)
 
-        self.ui()
+        self.movesCallBack()
 
         while self.run:
-            # ui check buttons
-            # Player make move
+            validMoves = self.checkIsValidMoves(self.player)
 
             if self.player == 1:
-                self.player1.makeMove(self.turn, self.board, self.moveTo)
+                self.player1.makeMove(self.turn, self.board, validMoves, self.moveTo)
                 self.player = 2
                 self.turn += 1
             else:
-                self.player2.makeMove(self.turn, self.board, self.moveTo)
+                self.player2.makeMove(self.turn, self.board, validMoves, self.moveTo)
                 self.player = 1
                 self.turn += 1
 
-            # ui draw board
             self.winner = self.checkGameEnd()
             if self.winner:
                 self.run = False
 
-    def moveTo(self, x, y):
+            self.buttonsCheck()
+
+    def moveTo(self, x, y = None):
         """Method for players to call when making a move in the game
         """
+        if type(x) == list:
+            y = x[1]
+            x = x[0]
+            
         if x != None and y != None and self.board[x][y] == 0 and self.validMove(x, y, self.player):
             self.movesMade.append([self.turn, self.player, [x,y]])
-            self.ui()
+            self.movesCallBack()
             return True
         return False
 
@@ -113,13 +118,14 @@ class Reversi:
 
     def checkGameEnd(self):
         """Checks if game has come to the end.
+            TODO: if neither player can't make a turn, end game
         """
         allTiles = [item for sublist in self.board for item in sublist]
         
         emptyTiles = sum(1 for tile in allTiles if tile == 0)
         whiteTiles = sum(1 for tile in allTiles if tile == 1)
         blackTiles = sum(1 for tile in allTiles if tile == 2)
-        if (not (emptyTiles and whiteTiles and blackTiles)) or self.turn > 80:
+        if not (emptyTiles and whiteTiles and blackTiles):
             if whiteTiles > blackTiles: #pl1 has won
                 return 1
             elif whiteTiles < blackTiles: #pl2 has won
@@ -127,3 +133,27 @@ class Reversi:
             else:                           #draw
                 return -1
         return False
+
+    def checkIsValidMoves(self, player):
+        moves = []
+        directionsToCheck = [[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1]]
+
+        if player == 1:
+            opponent = 2
+        elif player == 2:
+            opponent = 1
+        else:
+            print ("No player")
+            return moves
+
+        for x in range(8):
+            for y in range(8):
+                if self.board[x][y] == 0:
+                    for direction in directionsToCheck:
+                        #print (x,y, directionsToCheck.index(direction))
+                        if self.checkDirection(x, y, direction[0], direction[1], player, opponent) != []:
+                            moves.append([x,y])
+                            #print ("found")
+                            break
+
+        return moves

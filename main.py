@@ -1,8 +1,9 @@
-#!python3
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
 
 import pygame, random, sys, time, math, os
 from pygame.locals import *
-import reversi, ai, humanPlayer
+import reversi, ai_1depth, humanPlayer, ai_randomizer
 
 COUNTER_SIZE = 40
 TILE_SIZE = 50
@@ -18,9 +19,10 @@ class reversiGUI():
     def __init__(self):
         self.resources = {}
         self.keys = []
-        self.game = reversi.Reversi(self.moveMade)
-        self.player1 = humanPlayer.Human(self.checkKeyPressed)
-        self.player2 = ai.Game_ai()
+        self.game = reversi.Reversi(self.moveMade, self.checkKeyPressed)
+        #self.player1 = humanPlayer.Human(self.checkKeyPressed)
+        self.player1 = ai_randomizer.Game_ai()
+        self.player2 = ai_1depth.Game_ai()
         self.run = 0
         self.startGame = 1
 
@@ -118,10 +120,13 @@ class reversiGUI():
         font = pygame.font.SysFont("Helvetica", 48)
         if self.game.winner == -1:
             self.drawText("Stalemate", font, self.surface, 95, 10)
+            print ("Draw")
         if self.game.winner == 1:
             self.drawText("Victory to White", font, self.surface, 38, 10)
+            print ("Victory to White")
         if self.game.winner == 2:
             self.drawText("Victory to Black", font, self.surface, 39, 10)
+            print ("Victory to Black")
         
         pygame.display.update()
 
