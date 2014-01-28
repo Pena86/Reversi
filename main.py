@@ -14,13 +14,12 @@ WINDOWWIDTH = TILE_SIZE * 8
 WINDOWHEIGHT = TILE_SIZE * 8
 
 class dummyPlayer():
-    def __init__(self, name):
-        self.name = name
+    def __init__(self):
+        self.name = None
         self.ui = None
         self.wins = 0
         self.pointsTotal = 0
         self.roundTimeTotal = 0
-        self.turnSkipped = False
 
 class reversiGUI():
     """Reversi game with graphic user interface
@@ -29,15 +28,12 @@ class reversiGUI():
         self.resources = {}
         self.keys = []
         self.game = reversi.Reversi(self.moveMade, self.checkKeyPressed)
-        #self.player1 = humanPlayer.Human(self.checkKeyPressed)
-        self.player1 = ai_randomizer.Game_ai()
-        self.player2 = ai_1depth.Game_ai()
         self.run = 0
         self.startGame = 1
         self.roundsPlayed = 0
 
-        self.pl1 = dummyPlayer("ai_randomizer.py")
-        self.pl2 = dummyPlayer("ai_1depth.py")
+        self.pl1 = dummyPlayer()
+        self.pl2 = dummyPlayer()
 
         self.surface = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
         pygame.display.set_caption('Reversi')
@@ -52,11 +48,12 @@ class reversiGUI():
         """
         print ("[turn, player, [x, y]]")
         self.startGame = 0
-        self.main_clock = pygame.time.Clock()
 
-        results = self.game.roundStart(self.player1, self.player2)
+        #Play the round
+        results = self.game.roundStart(self.pl1.ui, self.pl2.ui)
         self.drawBoard()
 
+        #Save round result to owerall results
         if self.game.winner and type(results) == list and len(results) == 4:
             self.pl1.pointsTotal += results[0]
             self.pl2.pointsTotal += results[1]
@@ -64,35 +61,42 @@ class reversiGUI():
             self.pl2.roundTimeTotal += results[3]
 
             if self.game.winner == 1:
-                print ("Victory to %s with %d-%d tokens" %(self.pl1.name.strip('.py'), results[0], results[1]))
+                print ("Victory to %s with %d-%d tokens" %(self.pl1.name, results[0], results[1]))
                 self.pl1.wins += 1
             elif self.game.winner == 2:
-                print ("Victory to %s with %d-%d tokens" %(self.pl2.name.strip('.py'), results[1], results[0]))
+                print ("Victory to %s with %d-%d tokens" %(self.pl2.name, results[1], results[0]))
                 self.pl2.wins += 1
             elif self.game.winner == -1:
                 print ("Draw")
                 self.pl1.wins += 0.5
                 self.pl2.wins += 0.5
-        print ("%s %d - %d %s" %(self.pl1.name.strip('.py'), self.pl1.wins, self.pl2.wins, self.pl2.name.strip('.py')))
+        print ("%s %d - %d %s" %(self.pl1.name, self.pl1.wins, self.pl2.wins, self.pl2.name))
 
     def startTurnament(self, pl1, pl2, rounds):
         """Turnament consists of 1-n rounds
         """
+        #init the ai's
         self.run = 1
         if pl1 != None:
             self.pl1.name = pl1
+            self.pl1.ui = __import__(pl1).Game_ai()
         if pl2 != None:
             self.pl2.name = pl2
+            self.pl2.ui = __import__(pl2).Game_ai()
+
+        #Play the rounds
         while self.roundsPlayed < rounds and self.run:
-            print ("\nRound %d/%d \n%s vs %s\n\n" %(self.roundsPlayed+1, rounds, self.pl1.name.strip('.py'), self.pl2.name.strip('.py')))
+            print ("\nRound %d/%d \n%s vs %s\n\n" %(self.roundsPlayed+1, rounds, self.pl1.name, self.pl2.name))
             self.startRound()
             self.roundsPlayed +=1
 
-        print ("\n\nPlayers:\t%s\t%s" %(self.pl1.name.strip('.py'), self.pl2.name.strip('.py')))
-        print ("wins:\t\t\t%d\t%d" %(self.pl1.wins, self.pl2.wins))
-        print ("avg points/round:\t%d\t%d" %(self.pl1.pointsTotal/self.roundsPlayed, self.pl2.pointsTotal/self.roundsPlayed))
-        print ("avg round time:\t\t%d\t%d" %(self.pl1.roundTimeTotal/self.roundsPlayed, self.pl2.roundTimeTotal/self.roundsPlayed))
+        #Print owerall results
+        print ("\n\nPlayers:\t%s\t%s" %(self.pl1.name, self.pl2.name))
+        print ("wins:\t\t\t%.1f\t%.1f" %(self.pl1.wins, self.pl2.wins))
+        print ("avg points/round:\t%.1f\t%.1f" %(float(self.pl1.pointsTotal)/self.roundsPlayed, float(self.pl2.pointsTotal)/self.roundsPlayed))
+        print ("avg round time:\t\t%.5f\t%.5f" %(self.pl1.roundTimeTotal/self.roundsPlayed, self.pl2.roundTimeTotal/self.roundsPlayed))
 
+        #whait to quit
         while self.run:
             time.sleep(0.1)
             self.checkKeyPressed()
@@ -102,6 +106,7 @@ class reversiGUI():
         self.game.abort()
 
     def newGame(self):
+        # TODO: check how this now oprates...
         self.startGame = 1
         self.run = 0
         self.game.abort()
@@ -171,9 +176,9 @@ class reversiGUI():
         if self.game.winner == -1:
             self.drawText("Stalemate", font, self.surface, 95, 10)
         if self.game.winner == 1:
-            self.drawText("Victory to "+self.pl1.name.strip('.py'), font, self.surface, 38, 10)
+            self.drawText("Victory to "+self.pl1.name, font, self.surface, 38, 10)
         if self.game.winner == 2:
-            self.drawText("Victory to "+self.pl2.name.strip('.py'), font, self.surface, 39, 10)
+            self.drawText("Victory to "+self.pl2.name, font, self.surface, 39, 10)
         
         pygame.display.update()
 
@@ -202,9 +207,14 @@ if __name__ == '__main__':
                 except:
                     pass
 
+    if pl1 == None:
+        pl1 = "ai_randomizer.py"
+    if pl2 == None:
+        pl2 = "ai_1depth.py"
+
     #Start the game
     ui = reversiGUI()
     pygame.init()
-    ui.startTurnament(pl1, pl2, rounds)
+    ui.startTurnament(pl1.strip('.py'), pl2.strip('.py'), rounds)
     pygame.quit()
     sys.exit()

@@ -7,7 +7,15 @@ Dependancies:
 
 The program is run simply with:
 
-    python main.py
+    python main.py  
+
+Optional parameters for the game:
+
+	python main.py [ai1_filename ai2_filename rounds_to_play]  
+	- ai1- and ai2_filenames tell where to load the competing ai's (Note! for now, the ai files must be on the same folder as other .py files!) (or with 'humanPlayer.py' you can play yourself)  
+	- rounds_to_play is integer 1 to 1000, to how many rounds the ai's will play
+
+The program prints some statistic before quit.
 
 Some key commands at the game:  
     - Quit: Cmd + Q or Ctrl + q  

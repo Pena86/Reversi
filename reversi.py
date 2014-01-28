@@ -35,16 +35,22 @@ class Reversi:
 
         self.movesCallBack()
 
+        self.turnStart = self.pl1time = self.pl2time = 0
+
         while self.run:
             #time.sleep(0.2)
             validMoves = self.checkIsValidMoves(self.player)
 
             if self.player == 1:
+                self.turnStart = time.time()
                 self.player1.makeMove(self.turn, self.board, validMoves, self.moveTo)
+                self.pl1time += time.time() - self.turnStart
                 self.player = 2
                 self.turn += 1
             else:
+                self.turnStart = time.time()
                 self.player2.makeMove(self.turn, self.board, validMoves, self.moveTo)
+                self.pl2time += time.time() - self.turnStart
                 self.player = 1
                 self.turn += 1
 
@@ -56,7 +62,9 @@ class Reversi:
 
             self.buttonsCheck()
 
-        return [self.whiteTiles, self.blackTiles, 0, 0]
+        #print (self.pl1time, self.pl2time)
+
+        return [self.whiteTiles, self.blackTiles, self.pl1time, self.pl2time]
 
     def moveTo(self, x, y = None):
         """Method for players to call when making a move in the game
@@ -68,7 +76,6 @@ class Reversi:
         if x != None and y != None and self.board[x][y] == 0 and self.validMove(x, y, self.player):
             self.movesMade.append([self.turn, self.player, [x,y]])
             return True
-            #TODO: if players have skipped turns, end game  :: self.turnSkipped = False
         return False
 
     def abort(self):
@@ -128,14 +135,13 @@ class Reversi:
 
     def checkGameEnd(self):
         """Checks if game has come to the end.
-            TODO: if neither player can't make a turn, end game
         """
         allTiles = [item for sublist in self.board for item in sublist]
         
         self.emptyTiles = sum(1 for tile in allTiles if tile == 0)
         self.whiteTiles = sum(1 for tile in allTiles if tile == 1)
         self.blackTiles = sum(1 for tile in allTiles if tile == 2)
-        if not (self.emptyTiles and self.whiteTiles and self.blackTiles):
+        if not (self.emptyTiles and self.whiteTiles and self.blackTiles and self.movesMade[-1][0]+4 > self.turn):
             if self.whiteTiles > self.blackTiles: #pl1 has won
                 return 1
             elif self.whiteTiles < self.blackTiles: #pl2 has won
