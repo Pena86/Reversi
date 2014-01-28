@@ -13,6 +13,15 @@ FPS = 40
 WINDOWWIDTH = TILE_SIZE * 8
 WINDOWHEIGHT = TILE_SIZE * 8
 
+class dummyPlayer():
+    def __init__(self, name):
+        self.name = name
+        self.ui = None
+        self.wins = 0
+        self.pointsTotal = 0
+        self.roundTimeTotal = 0
+        self.turnSkipped = False
+
 class reversiGUI():
     """Reversi game with graphic user interface
     """
@@ -25,6 +34,10 @@ class reversiGUI():
         self.player2 = ai_1depth.Game_ai()
         self.run = 0
         self.startGame = 1
+        self.roundsPlayed = 0
+
+        self.pl1 = dummyPlayer("ai_randomizer.py")
+        self.pl2 = dummyPlayer("ai_1depth.py")
 
         self.surface = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
         pygame.display.set_caption('Reversi')
@@ -35,13 +48,50 @@ class reversiGUI():
         self.resources['white'] = pygame.image.load('media/white.png')
 
     def startRound(self):
+        """Round consists of several moves (sone by game logic)
+        """
         print ("[turn, player, [x, y]]")
         self.startGame = 0
-        self.run = 1
         self.main_clock = pygame.time.Clock()
 
-        self.game.roundStart(self.player1, self.player2)
-        self.draw_board()
+        results = self.game.roundStart(self.player1, self.player2)
+        self.drawBoard()
+
+        if self.game.winner and type(results) == list and len(results) == 4:
+            self.pl1.pointsTotal += results[0]
+            self.pl2.pointsTotal += results[1]
+            self.pl1.roundTimeTotal += results[2]
+            self.pl2.roundTimeTotal += results[3]
+
+            if self.game.winner == 1:
+                print ("Victory to %s with %d-%d tokens" %(self.pl1.name.strip('.py'), results[0], results[1]))
+                self.pl1.wins += 1
+            elif self.game.winner == 2:
+                print ("Victory to %s with %d-%d tokens" %(self.pl2.name.strip('.py'), results[1], results[0]))
+                self.pl2.wins += 1
+            elif self.game.winner == -1:
+                print ("Draw")
+                self.pl1.wins += 0.5
+                self.pl2.wins += 0.5
+        print ("%s %d - %d %s" %(self.pl1.name.strip('.py'), self.pl1.wins, self.pl2.wins, self.pl2.name.strip('.py')))
+
+    def startTurnament(self, pl1, pl2, rounds):
+        """Turnament consists of 1-n rounds
+        """
+        self.run = 1
+        if pl1 != None:
+            self.pl1.name = pl1
+        if pl2 != None:
+            self.pl2.name = pl2
+        while self.roundsPlayed < rounds and self.run:
+            print ("\nRound %d/%d \n%s vs %s\n\n" %(self.roundsPlayed+1, rounds, self.pl1.name.strip('.py'), self.pl2.name.strip('.py')))
+            self.startRound()
+            self.roundsPlayed +=1
+
+        print ("\n\nPlayers:\t%s\t%s" %(self.pl1.name.strip('.py'), self.pl2.name.strip('.py')))
+        print ("wins:\t\t\t%d\t%d" %(self.pl1.wins, self.pl2.wins))
+        print ("avg points/round:\t%d\t%d" %(self.pl1.pointsTotal/self.roundsPlayed, self.pl2.pointsTotal/self.roundsPlayed))
+        print ("avg round time:\t\t%d\t%d" %(self.pl1.roundTimeTotal/self.roundsPlayed, self.pl2.roundTimeTotal/self.roundsPlayed))
 
         while self.run:
             time.sleep(0.1)
@@ -59,7 +109,7 @@ class reversiGUI():
     def moveMade(self):
         if len(self.game.movesMade) > 0:
             print (self.game.movesMade[-1])
-        self.draw_board()
+        self.drawBoard()
 
     def checkKeyPressed(self):
         self.keys = pygame.key.get_pressed()
@@ -100,7 +150,7 @@ class reversiGUI():
         textrect.topleft = (x, y)
         surface.blit(textobj, textrect)
     
-    def draw_board(self):
+    def drawBoard(self):
         # First the board
         the_board = pygame.Rect(0, 0, WINDOWWIDTH, WINDOWHEIGHT)
         self.surface.blit(self.resources['board'], the_board)
@@ -120,21 +170,41 @@ class reversiGUI():
         font = pygame.font.SysFont("Helvetica", 48)
         if self.game.winner == -1:
             self.drawText("Stalemate", font, self.surface, 95, 10)
-            print ("Draw")
         if self.game.winner == 1:
-            self.drawText("Victory to White", font, self.surface, 38, 10)
-            print ("Victory to White")
+            self.drawText("Victory to "+self.pl1.name.strip('.py'), font, self.surface, 38, 10)
         if self.game.winner == 2:
-            self.drawText("Victory to Black", font, self.surface, 39, 10)
-            print ("Victory to Black")
+            self.drawText("Victory to "+self.pl2.name.strip('.py'), font, self.surface, 39, 10)
         
         pygame.display.update()
 
 
 if __name__ == '__main__':
+    """Arguments to the program: pl1_filename pl2_filename rounds_to_play
+    """
+    pl1 = pl2 = None
+    rounds = 1
+    if len(sys.argv) > 1:
+        for arg in sys.argv:
+            try:
+                rounds = int(arg)
+                if rounds < 1 or rounds > 1000:
+                    print ("Acceptable round ammount: 1-1000")
+                    rounds = 1
+            except:
+                try:
+                    path = os.path.split(arg)
+                    if path[1] != "main.py":
+                        if os.path.isfile(path[1]) and pl1 == None:
+                            pl1 = path[1]
+                        else:
+                            pl2 = path[1]
+                    pass
+                except:
+                    pass
+
+    #Start the game
     ui = reversiGUI()
     pygame.init()
-    while ui.startGame:
-        ui.startRound()
+    ui.startTurnament(pl1, pl2, rounds)
     pygame.quit()
     sys.exit()

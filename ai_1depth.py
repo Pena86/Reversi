@@ -1,4 +1,4 @@
-import time
+
 
 class Game_ai:
     """Example Ai class
@@ -18,7 +18,6 @@ class Game_ai:
     def makeMove(self, turnNo, boardSituation, validMoves, makeMoveCallBack):
         """Method to call when it's time to make a move
         """
-        time.sleep(0.1)
         self.board = boardSituation
         
         changes = {}
@@ -33,6 +32,7 @@ class Game_ai:
         # No moves can be found
         if changes == {}:
             makeMoveCallBack(None, None)
+            print ("1depth: No valid moves")
             return
         
         max_key, max_val = (-1,-1), 0

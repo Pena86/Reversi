@@ -1,3 +1,4 @@
+import time
 
 class Reversi:
     """Reversi game logig class
@@ -5,6 +6,10 @@ class Reversi:
     def __init__(self, movesCallBack, buttonsCheck):
         self.movesCallBack = movesCallBack
         self.buttonsCheck = buttonsCheck
+
+        self.emptyTiles = 0
+        self.whiteTiles = 0
+        self.blackTiles = 0
 
     def roundStart(self, pl1, pl2):
         """Create a new game and start playing
@@ -31,6 +36,7 @@ class Reversi:
         self.movesCallBack()
 
         while self.run:
+            #time.sleep(0.2)
             validMoves = self.checkIsValidMoves(self.player)
 
             if self.player == 1:
@@ -43,10 +49,14 @@ class Reversi:
                 self.turn += 1
 
             self.winner = self.checkGameEnd()
+
+            self.movesCallBack()
             if self.winner:
                 self.run = False
 
             self.buttonsCheck()
+
+        return [self.whiteTiles, self.blackTiles, 0, 0]
 
     def moveTo(self, x, y = None):
         """Method for players to call when making a move in the game
@@ -54,11 +64,11 @@ class Reversi:
         if type(x) == list:
             y = x[1]
             x = x[0]
-            
+
         if x != None and y != None and self.board[x][y] == 0 and self.validMove(x, y, self.player):
             self.movesMade.append([self.turn, self.player, [x,y]])
-            self.movesCallBack()
             return True
+            #TODO: if players have skipped turns, end game  :: self.turnSkipped = False
         return False
 
     def abort(self):
@@ -122,13 +132,13 @@ class Reversi:
         """
         allTiles = [item for sublist in self.board for item in sublist]
         
-        emptyTiles = sum(1 for tile in allTiles if tile == 0)
-        whiteTiles = sum(1 for tile in allTiles if tile == 1)
-        blackTiles = sum(1 for tile in allTiles if tile == 2)
-        if not (emptyTiles and whiteTiles and blackTiles):
-            if whiteTiles > blackTiles: #pl1 has won
+        self.emptyTiles = sum(1 for tile in allTiles if tile == 0)
+        self.whiteTiles = sum(1 for tile in allTiles if tile == 1)
+        self.blackTiles = sum(1 for tile in allTiles if tile == 2)
+        if not (self.emptyTiles and self.whiteTiles and self.blackTiles):
+            if self.whiteTiles > self.blackTiles: #pl1 has won
                 return 1
-            elif whiteTiles < blackTiles: #pl2 has won
+            elif self.whiteTiles < self.blackTiles: #pl2 has won
                 return 2
             else:                           #draw
                 return -1

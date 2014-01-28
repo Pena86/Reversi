@@ -1,4 +1,4 @@
-import time, random
+import random
 
 class Game_ai:
     """Example Ai class
@@ -18,7 +18,6 @@ class Game_ai:
     def makeMove(self, turnNo, boardSituation, validMoves, makeMoveCallBack):
         """Method to call when it's time to make a move
         """
-        time.sleep(0.1)
         self.board = boardSituation
 
         if len(validMoves):
