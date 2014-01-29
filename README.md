@@ -11,16 +11,19 @@ The program is run simply with:
 
 Optional parameters for the game:  
 
-	python main.py [ai1_filename ai2_filename rounds_to_play]  
+	python main.py [ai1_filename ai2_filename rounds_to_play -noMoves -noRotate]  
 	
 - ai1- and ai2_filenames tell where to load the competing ai's (Note! for now, the ai files must be on the same folder as other .py files!) (or with 'humanPlayer.py' you can play yourself)  
-- rounds_to_play is integer 1 to 1000, to how many rounds the ai's will play
+- rounds_to_play is integer 1 to 1000, to how many rounds the ai's will play  
+- '-noMoves' Don't print or show the moves, makes program faster to run (but doesn't print the board for hummanPlayer.py neither)  
+- '-noRotate' Don't rotate the starting player, so player1 is always the starting player
 
 The program prints some statistic before quit.
 
 Some key commands at the game:  
 - Quit: Cmd + Q or Ctrl + q  
-- New game: Cmd + N or Ctrl + n
+- New game: Cmd + N or Ctrl + n  
+- Pause game: Ctrl + p
 
 Things that can be improved upon:  
 - The AI is very dumb, it simply goes for the moves that capture the most

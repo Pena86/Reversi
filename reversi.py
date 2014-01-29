@@ -3,7 +3,7 @@ import time
 class Reversi:
     """Reversi game logig class
     """
-    def __init__(self, movesCallBack, buttonsCheck):
+    def __init__(self, movesCallBack = None, buttonsCheck = None):
         self.movesCallBack = movesCallBack
         self.buttonsCheck = buttonsCheck
 
@@ -33,7 +33,8 @@ class Reversi:
         self.player1.gameStart(1)
         self.player2.gameStart(2)
 
-        self.movesCallBack()
+        if self.movesCallBack != None:
+            self.movesCallBack()
 
         self.turnStart = self.pl1time = self.pl2time = 0
 
@@ -56,15 +57,21 @@ class Reversi:
 
             self.winner = self.checkGameEnd()
 
-            self.movesCallBack()
+            if self.movesCallBack != None:
+                if len(self.movesMade) > 1:
+                    self.movesCallBack(self.movesMade[-1])
+                else:
+                    self.movesCallBack()
+
             if self.winner:
                 self.run = False
 
-            self.buttonsCheck()
+            if self.buttonsCheck != None:
+                self.buttonsCheck()
 
         #print (self.pl1time, self.pl2time)
 
-        return [self.whiteTiles, self.blackTiles, self.pl1time, self.pl2time]
+        return [self.winner, self.whiteTiles, self.blackTiles, self.pl1time, self.pl2time]
 
     def moveTo(self, x, y = None):
         """Method for players to call when making a move in the game
@@ -77,6 +84,9 @@ class Reversi:
             self.movesMade.append([self.turn, self.player, [x,y]])
             return True
         return False
+
+    def getGameBoard(self):
+        return self.board
 
     def abort(self):
         """If the game needs to be aborted at the middle
@@ -141,7 +151,7 @@ class Reversi:
         self.emptyTiles = sum(1 for tile in allTiles if tile == 0)
         self.whiteTiles = sum(1 for tile in allTiles if tile == 1)
         self.blackTiles = sum(1 for tile in allTiles if tile == 2)
-        if not (self.emptyTiles and self.whiteTiles and self.blackTiles and self.movesMade[-1][0]+4 > self.turn):
+        if not (self.emptyTiles and self.whiteTiles and self.blackTiles and self.movesMade[-1][0]+4 > self.turn): # gives an error if game is ended when no moves are made
             if self.whiteTiles > self.blackTiles: #pl1 has won
                 return 1
             elif self.whiteTiles < self.blackTiles: #pl2 has won

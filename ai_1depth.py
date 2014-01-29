@@ -3,7 +3,7 @@
 class Game_ai:
     """Example Ai class
     """
-    def __init__(self):
+    def __init__(self, checkButtons):
         self.move = (-1,-1)
         self.run = False
         self.board = []

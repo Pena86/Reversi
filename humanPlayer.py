@@ -1,12 +1,12 @@
 import time
 
-class Human:
+class Game_ai:
     """Class for human players
     """
-    def __init__(self, callBack):
+    def __init__(self, checkButtons):
         self.move = (-1,-1)
         self.run = False
-        self.checkKeyPressed = callBack
+        self.checkKeyPressed = checkButtons
         self.player = -1
 
     def gameStart(self, playerNo):
