@@ -51,7 +51,7 @@ class reversiGUI():
         self.resources['black'] = pygame.image.load('media/black.png')
         self.resources['white'] = pygame.image.load('media/white.png')
 
-    def startRound(self, pl1, pl2):
+    def startRound(self, pl1, pl2, turnTime = 0):
         """Round consists of several moves (done by game logic)
         """
         if not self.noMoves:
@@ -59,28 +59,37 @@ class reversiGUI():
         self.startGame = 0
 
         #Play the round
-        results = self.game.roundStart(pl1.ui, pl2.ui)
+        results = self.game.roundStart(pl1.ui, pl2.ui, turnTime)
 
         #Save round result to owerall results
-        if type(results) == list and len(results) == 5:
-            pl1.pointsTotal += results[1]
-            pl2.pointsTotal += results[2]
-            pl1.roundTimeTotal += results[3]
-            pl2.roundTimeTotal += results[4]
+        pl1.pointsTotal += results["pl1tiles"]
+        pl2.pointsTotal += results["pl2tiles"]
+        pl1.roundTimeTotal += results["pl1time"]
+        pl2.roundTimeTotal += results["pl2time"]
+        if pl1.longestTurn < results["pl1longest"]:
+            pl1.longestTurn = results["pl1longest"]
+        pl1.timeExeeded += results["pl1err"]
+        if pl2.longestTurn < results["pl2longest"]:
+            pl2.longestTurn = results["pl2longest"]
+        pl2.timeExeeded += results["pl2err"]
 
-            if results[0] == 1:
-                print ("Victory to %s with %d-%d tokens" %(pl1.name, results[1], results[2]))
-                pl1.wins += 1
-            elif results[0] == 2:
-                print ("Victory to %s with %d-%d tokens" %(pl2.name, results[2], results[1]))
-                pl2.wins += 1
-            elif results[0] == -1:
-                print ("Draw")
-                pl1.wins += 0.5
-                pl2.wins += 0.5
-        return results[0]
+        if results["winner"] == 1:
+            print ("Victory to %s with %d-%d tokens" %(pl1.name, results["pl1tiles"], results["pl2tiles"]))
+            pl1.wins += 1
+        elif results["winner"] == 2:
+            print ("Victory to %s with %d-%d tokens" %(pl2.name, results["pl2tiles"], results["pl1tiles"]))
+            pl2.wins += 1
+        elif results["winner"] == -1:
+            print ("Draw")
+            pl1.wins += 0.5
+            pl2.wins += 0.5
 
-    def startTurnament(self, pl1, pl2, rounds):
+        print ("%s longest turn: %f with %d time exeedings" %(pl1.name, results["pl1longest"], results["pl1err"]))
+        print ("%s longest turn: %f with %d time exeedings" %(pl2.name, results["pl2longest"], results["pl2err"]))
+
+        return results["winner"]
+
+    def startTurnament(self, pl1, pl2, rounds, turnTime = 0):
         """Turnament consists of 1-n rounds
         Players take turns as a starting player
         """
@@ -98,7 +107,7 @@ class reversiGUI():
             self.lastWinner = 0
             if self.rotateStarter and self.roundsPlayed%2 == 1:
                 print ("\n\nRound %d/%d \n%s vs %s\n" %(self.roundsPlayed+1, rounds, self.pl2.name, self.pl1.name))
-                winner = self.startRound(self.pl2, self.pl1)
+                winner = self.startRound(self.pl2, self.pl1, turnTime)
                 if winner == 1:
                     self.lastWinner = 2
                 elif winner == 2:
@@ -108,7 +117,7 @@ class reversiGUI():
                 print ("%s %d - %d %s" %(self.pl1.name, self.pl1.wins, self.pl2.wins, self.pl2.name))
             else:
                 print ("\nRound %d/%d \n%s vs %s\n\n" %(self.roundsPlayed+1, rounds, self.pl1.name, self.pl2.name))
-                self.lastWinner = self.startRound(self.pl1, self.pl2)
+                self.lastWinner = self.startRound(self.pl1, self.pl2, turnTime)
                 print ("%s %d - %d %s" %(self.pl1.name, self.pl1.wins, self.pl2.wins, self.pl2.name))
             self.roundsPlayed +=1
             self.drawBoard()
@@ -118,6 +127,8 @@ class reversiGUI():
         print ("wins:\t\t\t%.1f\t%.1f" %(self.pl1.wins, self.pl2.wins))
         print ("avg points/round:\t%.1f\t%.1f" %(float(self.pl1.pointsTotal)/self.roundsPlayed, float(self.pl2.pointsTotal)/self.roundsPlayed))
         print ("avg round time:\t\t%.5f\t%.5f" %(self.pl1.roundTimeTotal/self.roundsPlayed, self.pl2.roundTimeTotal/self.roundsPlayed))
+        print ("longest turn: \t\t%.5f\t%.5f" %(self.pl1.longestTurn, self.pl2.longestTurn))
+        print ("total time exeedings: \t%d\t%d" %(self.pl1.timeExeeded, self.pl2.timeExeeded))
 
         #whait to quit
         while self.run:

@@ -39,7 +39,6 @@ Some key commands at the game:
 The program prints some statistic before quit.
 
 ### TODO:
-- Turn time counting   
 - Possible threading for the players  
 - Help libraries for AI developement  
 - Tournament mode  
