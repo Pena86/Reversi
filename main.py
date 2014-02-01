@@ -19,17 +19,20 @@ class dummyPlayer():
         self.wins = 0
         self.pointsTotal = 0
         self.roundTimeTotal = 0
+        self.longestTurn = 0
+        self.timeExeeded = 0
 
 class reversiGUI():
     """Reversi game with graphic user interface
     """
-    def __init__(self, noMoves = False, noRotate = False):
+    def __init__(self, noMoves = False, noRotate = False, turnTime = 0):
         self.resources = {}
         self.keys = []
         self.run = 0
         self.pause = False
-        self.rotateStarter =  not noRotate #rotate the starting player?
+        self.rotateStarter = not noRotate #rotate the starting player?
         self.noMoves = noMoves #Print moves made to the console?
+        self.turnTime = turnTime #Not used yet
         if self.noMoves:
             self.game = reversi.Reversi(None, self.checkKeyPressed)
         else:
@@ -225,6 +228,7 @@ if __name__ == '__main__':
     pl1 = pl2 = None
     rounds = 1
     noMoves = noRotate = False
+    turnTime = 0
     if len(sys.argv) > 1:
         for arg in sys.argv:
             if arg[0] == "-":
@@ -232,25 +236,25 @@ if __name__ == '__main__':
                     noMoves = True
                 elif arg == "-noRotate":
                     noRotate = True
+                elif arg[:7] == "-round=":
+                    rounds = int(arg[7:])
+                    if rounds < 1 or rounds > 1000:
+                        print ("Acceptable round ammount: 1-1000")
+                        rounds = 1
+                elif arg[:6] == "-time=":
+                    turnTime = int(arg[6:])
                 else:
                     print ("Unknown argument %s" %(arg))
             else:
                 try:
-                    rounds = int(arg)
-                    if rounds < 1 or rounds > 1000:
-                        print ("Acceptable round ammount: 1-1000")
-                        rounds = 1
+                    path = os.path.split(arg)
+                    if path[1] != "main.py":
+                        if os.path.isfile(path[1]) and pl1 == None:
+                            pl1 = path[1]
+                        else:
+                            pl2 = path[1]
                 except:
-                    try:
-                        path = os.path.split(arg)
-                        if path[1] != "main.py":
-                            if os.path.isfile(path[1]) and pl1 == None:
-                                pl1 = path[1]
-                            else:
-                                pl2 = path[1]
-                        pass
-                    except:
-                        pass
+                    pass
 
     if pl1 == None:
         pl1 = "ai_randomizer.py"
@@ -258,7 +262,7 @@ if __name__ == '__main__':
         pl2 = "ai_1depth.py"
 
     #Start the game
-    ui = reversiGUI(noMoves, noRotate)
+    ui = reversiGUI(noMoves, noRotate, turnTime)
     pygame.init()
     ui.startTurnament(pl1.strip('.py'), pl2.strip('.py'), rounds)
     pygame.quit()
