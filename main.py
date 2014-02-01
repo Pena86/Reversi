@@ -25,14 +25,13 @@ class dummyPlayer():
 class reversiGUI():
     """Reversi game with graphic user interface
     """
-    def __init__(self, noMoves = False, noRotate = False, turnTime = 0):
+    def __init__(self, noMoves = False, noRotate = False):
         self.resources = {}
         self.keys = []
         self.run = 0
         self.pause = False
         self.rotateStarter = not noRotate #rotate the starting player?
         self.noMoves = noMoves #Print moves made to the console?
-        self.turnTime = turnTime #Not used yet
         if self.noMoves:
             self.game = reversi.Reversi(None, self.checkKeyPressed)
         else:
@@ -262,8 +261,8 @@ if __name__ == '__main__':
         pl2 = "ai_1depth.py"
 
     #Start the game
-    ui = reversiGUI(noMoves, noRotate, turnTime)
+    ui = reversiGUI(noMoves, noRotate)
     pygame.init()
-    ui.startTurnament(pl1.strip('.py'), pl2.strip('.py'), rounds)
+    ui.startTurnament(pl1.strip('.py'), pl2.strip('.py'), rounds, turnTime)
     pygame.quit()
     sys.exit()

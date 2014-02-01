@@ -11,7 +11,10 @@ class Reversi:
         self.whiteTiles = 0
         self.blackTiles = 0
 
-    def roundStart(self, pl1, pl2):
+        self.player1 = None
+        self.player2 = None
+
+    def roundStart(self, pl1, pl2, turnTime = 0):
         """Create a new game and start playing
         """
         self.run = True
@@ -36,7 +39,7 @@ class Reversi:
         if self.movesCallBack != None:
             self.movesCallBack()
 
-        self.turnStart = self.pl1time = self.pl2time = 0
+        self.turnStart = self.turnLength = self.pl1time = self.pl2time = self.pl1longestTurn = self.pl2longestTurn = self.pl1timeExeeded = self.pl2timeExeeded = 0
 
         while self.run:
             #time.sleep(0.2)
@@ -45,13 +48,23 @@ class Reversi:
             if self.player == 1:
                 self.turnStart = time.time()
                 self.player1.makeMove(self.turn, self.board, validMoves, self.moveTo)
-                self.pl1time += time.time() - self.turnStart
+                self.turnLength = time.time() - self.turnStart
+                self.pl1time += self.turnLength
+                if turnTime and self.turnLength > turnTime:
+                    self.pl1timeExeeded += 1
+                if self.pl1longestTurn < self.turnLength:
+                    self.pl1longestTurn = self.turnLength
                 self.player = 2
                 self.turn += 1
             else:
                 self.turnStart = time.time()
                 self.player2.makeMove(self.turn, self.board, validMoves, self.moveTo)
-                self.pl2time += time.time() - self.turnStart
+                self.turnLength = time.time() - self.turnStart
+                self.pl2time += self.turnLength
+                if turnTime and self.turnLength > turnTime:
+                    self.pl2timeExeeded += 1
+                if self.pl2longestTurn < self.turnLength:
+                    self.pl2longestTurn = self.turnLength
                 self.player = 1
                 self.turn += 1
 
@@ -71,7 +84,10 @@ class Reversi:
 
         #print (self.pl1time, self.pl2time)
 
-        return [self.winner, self.whiteTiles, self.blackTiles, self.pl1time, self.pl2time]
+        return {"winner": self.winner, "pl1tiles": self.whiteTiles, "pl2tiles": self.blackTiles, \
+            "pl1time": self.pl1time, "pl2time": self.pl2time, \
+            "pl1longest": self.pl1longestTurn, "pl2longest": self.pl2longestTurn, \
+            "pl1err": self.pl1timeExeeded, "pl2err": self.pl2timeExeeded}
 
     def moveTo(self, x, y = None):
         """Method for players to call when making a move in the game
@@ -92,8 +108,10 @@ class Reversi:
         """If the game needs to be aborted at the middle
         """
         self.run = False
-        self.player1.gameEnd()
-        self.player2.gameEnd()
+        if self.player1 != None:
+            self.player1.gameEnd()
+        if self.player2 != None:
+            self.player2.gameEnd()
 
     def validMove(self, x, y, player):
         """If the move is valid, it's made to the board and return True
