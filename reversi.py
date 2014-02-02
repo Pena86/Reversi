@@ -140,7 +140,7 @@ class Reversi:
         return False
 
     def checkDirection(self, x, y, dx, dy, player, opponent):
-        """Checks pieces to flip in the given ridection and return a list of tuples for those pieces to flip.
+        """Checks pieces to flip in the given direction and return a list of lists for those pieces to flip.
             else return empty list
         """
         x += dx
@@ -179,6 +179,8 @@ class Reversi:
         return False
 
     def checkIsValidMoves(self, player):
+        """Check if there are valid moves for the player
+        """
         moves = []
         directionsToCheck = [[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1]]
 

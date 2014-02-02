@@ -4,7 +4,7 @@ class Game_ai:
     """Example Ai class.
     This class contains all, what your AI class should also contain for competing at the possible unoffical tourmanent.
 
-    The file name (whitout .py extension) is your AI's name at results.
+    The file name (whitout .py extension) is your AI's name at results. Don't change this class name or these method names, because then the game can't use your AI! You can create new methods to the class if you need.
     """
     def __init__(self, turnTime = 0, checkButtons = None):
         """Init of the class

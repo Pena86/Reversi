@@ -2,6 +2,8 @@ I have a study project wich includes developing AI to reversi game (http://en.wi
 
 If you need to install python 3 along python 2 use this in windows: https://bitbucket.org/vinay.sajip/pylauncher These instructions are written mostly to windows enviroment. Unix users, you know what to do ;)
 
+'ai_randomizer.py' is an example AI and also contains some information on what you need to run your ai with the game. Just copy the file and modify it to your needs, and then test it with the game.
+
 ### commandline.py
 
 Dependancies:  

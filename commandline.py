@@ -35,7 +35,7 @@ class reversiGUI():
         """Round consists of several moves (done by game logic)
         """
         if not self.noMoves:
-            print ("\n[turn, player, [x, y]]")
+            print ("[turn, player, [x, y]]")
         self.startGame = 0
 
         #Play the round
