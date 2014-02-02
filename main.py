@@ -269,7 +269,7 @@ if __name__ == '__main__':
     if pl1 == None:
         pl1 = "ai_randomizer.py"
     if pl2 == None:
-        pl2 = "ai_1depth.py"
+        pl2 = "ai_randomizer.py"
 
     #Start the game
     ui = reversiGUI(noMoves, noRotate)
