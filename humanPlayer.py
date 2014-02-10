@@ -1,3 +1,6 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
 import time
 
 class Game_ai:
@@ -9,7 +12,7 @@ class Game_ai:
         self.checkKeyPressed = checkButtons
         self.player = -1
 
-    def gameStart(self, playerNo):
+    def gameStart(self, playerNo, board = None):
         """Method to call when game round starts
         """
         self.run = True

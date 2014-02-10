@@ -1,4 +1,7 @@
-import time
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
+import time, copy
 
 class Reversi:
     """Reversi game logig class
@@ -33,8 +36,8 @@ class Reversi:
         self.player1 = pl1
         self.player2 = pl2
 
-        self.player1.gameStart(1)
-        self.player2.gameStart(2)
+        self.player1.gameStart(1, self.board)
+        self.player2.gameStart(2, self.board)
 
         if self.movesCallBack != None:
             self.movesCallBack()
@@ -47,7 +50,7 @@ class Reversi:
 
             if self.player == 1:
                 self.turnStart = time.time()
-                self.player1.makeMove(self.turn, self.board, validMoves, self.moveTo)
+                self.player1.makeMove(self.turn, copy.deepcopy(self.board), validMoves, self.moveTo)
                 self.turnLength = time.time() - self.turnStart
                 self.pl1time += self.turnLength
                 if turnTime and self.turnLength > turnTime:
@@ -58,7 +61,7 @@ class Reversi:
                 self.turn += 1
             else:
                 self.turnStart = time.time()
-                self.player2.makeMove(self.turn, self.board, validMoves, self.moveTo)
+                self.player2.makeMove(self.turn, copy.deepcopy(self.board), validMoves, self.moveTo)
                 self.turnLength = time.time() - self.turnStart
                 self.pl2time += self.turnLength
                 if turnTime and self.turnLength > turnTime:

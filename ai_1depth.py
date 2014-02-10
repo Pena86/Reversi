@@ -9,7 +9,7 @@ class Game_ai:
         self.board = []
         self.player = -1
 
-    def gameStart(self, playerNo):
+    def gameStart(self, playerNo, board = None):
         """Method to call when game round starts
         """
         self.run = True
