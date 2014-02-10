@@ -145,9 +145,9 @@ if __name__ == '__main__':
                     pass
 
     if pl1 == None:
-        pl1 = "ai_randomizer.py"
+        pl1 = "ai_node_turn.py"
     if pl2 == None:
-        pl2 = "ai_1depth.py"
+        pl2 = "ai_node_round.py"
 
     #Start the game
     ui = reversiGUI(noMoves, noRotate)
