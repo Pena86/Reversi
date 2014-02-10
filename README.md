@@ -2,7 +2,17 @@ I have a study project wich includes developing AI to reversi game (http://en.wi
 
 If you need to install python 3 along python 2 use this in windows: https://bitbucket.org/vinay.sajip/pylauncher These instructions are written mostly to windows enviroment. Unix users, you know what to do ;)
 
+The performance of the helpClass node tree seems to be quite modest. In my tests the program can count about 3 level of nodes in 1s and 4 levels in 10s. If you come up with better solution, fork the repo, implement your solution and send me a pull request. Good improvements are always welcome!
+
+### Example ai's
+
 'ai_randomizer.py' is an example AI and also contains some information on what you need to run your ai with the game. Just copy the file and modify it to your needs, and then test it with the game.
+
+'ai_node_turn.py' demonstrates how to create new node tree in ewery turn.
+
+'ai_node_round.py' denomstrates how to update single node tree for whole round.
+
+For each ai, you need to implement your own algorithm (for example min-max), for deciding wich move is the best to make.
 
 ### commandline.py
 
@@ -42,8 +52,8 @@ The program prints some statistic before quit.
 
 ### TODO:
 - Possible threading for the players  
-- Help libraries for AI developement  
 - Tournament mode  
+- Improve the node creation performance
 
 
 

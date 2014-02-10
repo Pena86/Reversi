@@ -64,8 +64,8 @@ class reversiGUI():
             pl1.wins += 0.5
             pl2.wins += 0.5
 
-        print ("%s longest turn: %f with %d time exeedings" %(pl1.name, results["pl1longest"], results["pl1err"]))
-        print ("%s longest turn: %f with %d time exeedings" %(pl2.name, results["pl2longest"], results["pl2err"]))
+        print ("%s longest turn: %.3f with %d time exeedings" %(pl1.name, results["pl1longest"], results["pl1err"]))
+        print ("%s longest turn: %.3f with %d time exeedings" %(pl2.name, results["pl2longest"], results["pl2err"]))
 
         return results["winner"]
 
@@ -100,8 +100,8 @@ class reversiGUI():
         print ("\n\nPlayers:\t%s\t%s" %(self.pl1.name, self.pl2.name))
         print ("wins:\t\t\t%.1f\t%.1f" %(self.pl1.wins, self.pl2.wins))
         print ("avg points/round:\t%.1f\t%.1f" %(float(self.pl1.pointsTotal)/self.roundsPlayed, float(self.pl2.pointsTotal)/self.roundsPlayed))
-        print ("avg round time:\t\t%.5f\t%.5f" %(self.pl1.roundTimeTotal/self.roundsPlayed, self.pl2.roundTimeTotal/self.roundsPlayed))
-        print ("longest turn: \t\t%.5f\t%.5f" %(self.pl1.longestTurn, self.pl2.longestTurn))
+        print ("avg round time:\t\t%.3f\t%.3f" %(self.pl1.roundTimeTotal/self.roundsPlayed, self.pl2.roundTimeTotal/self.roundsPlayed))
+        print ("longest turn: \t\t%.3f\t%.3f" %(self.pl1.longestTurn, self.pl2.longestTurn))
         print ("total time exeedings: \t%d\t%d" %(self.pl1.timeExeeded, self.pl2.timeExeeded))
 
     def moveMade(self, lastMove = None):
@@ -145,9 +145,9 @@ if __name__ == '__main__':
                     pass
 
     if pl1 == None:
-        pl1 = "ai_randomizer.py"
+        pl1 = "ai_node_turn.py"
     if pl2 == None:
-        pl2 = "ai_randomizer.py"
+        pl2 = "ai_node_round.py"
 
     #Start the game
     ui = reversiGUI(noMoves, noRotate)

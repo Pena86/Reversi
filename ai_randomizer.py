@@ -1,3 +1,6 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
 import time, random
 
 class Game_ai:
@@ -18,7 +21,7 @@ class Game_ai:
         self.player = -1
         self.turnTime = turnTime
 
-    def gameStart(self, playerNo):
+    def gameStart(self, playerNo, board = None):
         """Method to call when game round starts.
         Init what you need before the round
         I'm planning to give this function it's own thread, but that's not ready yet
