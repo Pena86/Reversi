@@ -47,9 +47,16 @@ class reversiGUI():
         pygame.display.set_caption('Reversi')
 
         # set up images
-        self.resources['board'] = pygame.image.load('media/board.png')
-        self.resources['black'] = pygame.image.load('media/black.png')
-        self.resources['white'] = pygame.image.load('media/white.png')
+        if pygame.image.get_extended() and False:
+            self.resources['board'] = pygame.image.load('media/board.png')
+            self.resources['black'] = pygame.image.load('media/black.png')
+            self.resources['white'] = pygame.image.load('media/white.png')
+        else:
+            self.resources['board'] = pygame.image.load('media/board.bmp')
+            self.resources['black'] = pygame.image.load('media/black.bmp').convert()
+            self.resources['black'].set_colorkey((255,255,255))
+            self.resources['white'] = pygame.image.load('media/white.bmp').convert()
+            self.resources['white'].set_colorkey((255,255,255))
 
     def startRound(self, pl1, pl2, turnTime = 0):
         """Round consists of several moves (done by game logic)

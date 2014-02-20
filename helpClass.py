@@ -162,10 +162,12 @@ class GameState:
     def printBoard(self):
         """More readable print of the board
         """
+        board = ""
         for x in self.gameBoard:
             for y in x:
-                print (y, end=" ")
-            print (" ")
+                board += str(y) + " "
+            board += "\n"
+        print (board)
 
     def moveTo(self, pos):
         """returns new gameState with move done
