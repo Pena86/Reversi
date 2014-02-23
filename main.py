@@ -266,10 +266,11 @@ if __name__ == '__main__':
                 try:
                     path = os.path.split(arg)
                     if path[1] != "main.py":
-                        if os.path.isfile(path[1]) and pl1 == None:
-                            pl1 = path[1]
-                        else:
-                            pl2 = path[1]
+                        if os.path.isfile(path[1]):
+                            if pl1 == None:
+                                pl1 = path[1]
+                            else:
+                                pl2 = path[1]
                 except:
                     pass
 

@@ -22,10 +22,13 @@ class Game_ai:
         """Method to call when it's time to make a move
         """
         turn = 1
-        while turn and self.run:
-            time.sleep(0.1)
-            if self.checkKeyPressed():
-                turn = 0
+        if len(validMoves):
+            while turn and self.run:
+                time.sleep(0.1)
+                if self.checkKeyPressed():
+                    turn = 0
+        else:
+            print ("HumanPlayer: No possible moves")
         pass
 
     def gameEnd(self):

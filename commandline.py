@@ -137,10 +137,11 @@ if __name__ == '__main__':
                     if path[1] != "commandline.py":
                         if path[1] == "humanPlayer.py":
                             print ("\n\n## Human player not supported. Use 'main.py' insted ##\n\n")
-                        elif os.path.isfile(path[1]) and pl1 == None:
-                            pl1 = path[1]
-                        else:
-                            pl2 = path[1]
+                        if os.path.isfile(path[1]):
+                            if pl1 == None:
+                                pl1 = path[1]
+                            else:
+                                pl2 = path[1]
                 except:
                     pass
 
