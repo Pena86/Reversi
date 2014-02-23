@@ -47,7 +47,7 @@ class reversiGUI():
         pygame.display.set_caption('Reversi')
 
         # set up images
-        if pygame.image.get_extended() and False:
+        if pygame.image.get_extended():
             self.resources['board'] = pygame.image.load('media/board.png')
             self.resources['black'] = pygame.image.load('media/black.png')
             self.resources['white'] = pygame.image.load('media/white.png')
