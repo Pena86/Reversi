@@ -52,6 +52,7 @@ class Reversi:
                 self.turnStart = time.time()
                 self.player1.makeMove(self.turn, copy.deepcopy(self.board), validMoves, self.moveTo)
                 self.turnLength = time.time() - self.turnStart
+                self.moveMade(validMoves)
                 self.pl1time += self.turnLength
                 if turnTime and self.turnLength > turnTime:
                     self.pl1timeExeeded += 1
@@ -63,6 +64,7 @@ class Reversi:
                 self.turnStart = time.time()
                 self.player2.makeMove(self.turn, copy.deepcopy(self.board), validMoves, self.moveTo)
                 self.turnLength = time.time() - self.turnStart
+                self.moveMade(validMoves)
                 self.pl2time += self.turnLength
                 if turnTime and self.turnLength > turnTime:
                     self.pl2timeExeeded += 1
@@ -74,13 +76,15 @@ class Reversi:
             self.winner = self.checkGameEnd()
 
             if self.movesCallBack != None:
-                if len(self.movesMade) > 1:
+                if len(self.movesMade) > 0:
                     self.movesCallBack(self.movesMade[-1])
                 else:
                     self.movesCallBack()
 
             if self.winner:
                 self.run = False
+                self.player1.gameEnd()
+                self.player2.gameEnd()
 
             if self.buttonsCheck != None:
                 self.buttonsCheck()
@@ -91,6 +95,13 @@ class Reversi:
             "pl1time": self.pl1time, "pl2time": self.pl2time, \
             "pl1longest": self.pl1longestTurn, "pl2longest": self.pl2longestTurn, \
             "pl1err": self.pl1timeExeeded, "pl2err": self.pl2timeExeeded}
+
+    def moveMade(self, validMoves):
+        if len(validMoves) == 0 and self.movesMade[-1][0] != self.turn:
+            self.movesMade.append([self.turn, self.player, [-1,-1]])
+        elif len(validMoves) != 0 and len(self.movesMade) > 0 and self.movesMade[-1][0] != self.turn:
+            print ("## Pelaajalla jai vuoro tekematta ##")
+            self.movesMade.append([self.turn, self.player, [-2,-2]])
 
     def moveTo(self, x, y = None):
         """Method for players to call when making a move in the game
@@ -172,7 +183,7 @@ class Reversi:
         self.emptyTiles = sum(1 for tile in allTiles if tile == 0)
         self.whiteTiles = sum(1 for tile in allTiles if tile == 1)
         self.blackTiles = sum(1 for tile in allTiles if tile == 2)
-        if not (self.emptyTiles and self.whiteTiles and self.blackTiles and self.movesMade[-1][0]+4 > self.turn): # gives an error if game is ended when no moves are made
+        if not (self.emptyTiles and self.whiteTiles and self.blackTiles) and len(self.movesMade) > 1 and self.movesMade[-1][2] == [-1,-1] and self.movesMade[-2][2] == [-1,-1]:
             if self.whiteTiles > self.blackTiles: #pl1 has won
                 return 1
             elif self.whiteTiles < self.blackTiles: #pl2 has won
