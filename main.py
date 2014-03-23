@@ -116,10 +116,10 @@ class reversiGUI():
         self.run = 1
         if pl1 != None:
             self.pl1.name = pl1
-            self.pl1.ui = __import__(pl1).Game_ai(self.checkKeyPressed)
+            self.pl1.ui = __import__(pl1).Game_ai(turnTime = turnTime, checkButtons = self.checkKeyPressed)
         if pl2 != None:
             self.pl2.name = pl2
-            self.pl2.ui = __import__(pl2).Game_ai(self.checkKeyPressed)
+            self.pl2.ui = __import__(pl2).Game_ai(turnTime = turnTime, checkButtons = self.checkKeyPressed)
 
         #Play the rounds
         while self.roundsPlayed < rounds and self.run:

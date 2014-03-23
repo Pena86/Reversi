@@ -152,12 +152,8 @@ class GameState:
         #print ("gameState init", type(board), turn)
         self.gameBoard = board
         self.playerTurn = turn
-        self.disksOnBoard = gameOperations.checkGameEnd(board) #(empty, white, black, winner)
+        self.disksOnBoard = gameOperations.countTiles(board) #(empty, white, black)
         self.possibleMoves = gameOperations.checkIsValidMoves(turn, board)
-        if self.disksOnBoard[3]:
-            self.gameNotEnded = False
-        else:
-            self.gameNotEnded = True
 
     def printBoard(self):
         """More readable print of the board
@@ -165,7 +161,7 @@ class GameState:
         board = ""
         for x in self.gameBoard:
             for y in x:
-                board += str(y) + " "
+                board = board + str(y) + " "
             board += "\n"
         print (board)
 
@@ -186,7 +182,7 @@ class GameState:
     def printAll(self):
         """Method for debugging
         """
-        print (self.gameBoard, self.playerTurn, self.disksOnBoard, self.possibleMoves, self.gameNotEnded)
+        print (self.gameBoard, self.playerTurn, self.disksOnBoard, self.possibleMoves)
 
 
 class GameOperations:
@@ -196,6 +192,7 @@ class GameOperations:
     def validMove(self, x, y, player, board):
         """If the move is valid, it's made to the board and return new board
             else return False
+            x,y = -1,-1 -> 'pass move'
         """
         if player == 1:
             opponent = 2
@@ -205,6 +202,9 @@ class GameOperations:
             print ("--- No player ---")
             return False
         #print (player, opponent, x, y)
+
+        if x == -1 and y == -1 and self.checkIsValidMoves(player, board) == []:
+            return board
 
         piecesToFlip = []
         directionsToCheck = [[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1]]
@@ -242,25 +242,6 @@ class GameOperations:
             y += dy
         return []
 
-    def checkGameEnd(self, board):
-        """Checks if game has come to the end.
-
-        Note: If neither player can't make a turn, this does not consider game ended.
-        """
-        allTiles = [item for sublist in board for item in sublist]
-        
-        emptyTiles = sum(1 for tile in allTiles if tile == 0)
-        whiteTiles = sum(1 for tile in allTiles if tile == 1)
-        blackTiles = sum(1 for tile in allTiles if tile == 2)
-        if not (emptyTiles and whiteTiles and blackTiles): # and self.movesMade[-1][0]+4 > self.turn): # gives an error if game is ended when no moves are made
-            if whiteTiles > blackTiles: #pl1 has won
-                return (emptyTiles, whiteTiles, blackTiles, 1)
-            elif whiteTiles < blackTiles: #pl2 has won
-                return (emptyTiles, whiteTiles, blackTiles, 2)
-            else:                           #draw
-                return (emptyTiles, whiteTiles, blackTiles, -1)
-        return (emptyTiles, whiteTiles, blackTiles, 0)
-
     def checkIsValidMoves(self, player, board):
         """Check if there are valid moves for the player
         """
@@ -284,8 +265,17 @@ class GameOperations:
                             moves.append([x,y])
                             #print ("found")
                             break
-
         return moves
+
+    def countTiles(self, board):
+        """Counts the tiles on the board
+        """
+        allTiles = [item for sublist in board for item in sublist]
+        
+        emptyTiles = sum(1 for tile in allTiles if tile == 0)
+        whiteTiles = sum(1 for tile in allTiles if tile == 1)
+        blackTiles = sum(1 for tile in allTiles if tile == 2)
+        return (emptyTiles, whiteTiles, blackTiles)
 
 
 try:
