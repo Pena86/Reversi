@@ -97,10 +97,12 @@ class Reversi:
             "pl1err": self.pl1timeExeeded, "pl2err": self.pl2timeExeeded}
 
     def moveMade(self, validMoves):
+        """Update the moves list with 'skip' moves
+        """
         if len(validMoves) == 0 and self.movesMade[-1][0] != self.turn:
             self.movesMade.append([self.turn, self.player, [-1,-1]])
         elif len(validMoves) != 0 and len(self.movesMade) > 0 and self.movesMade[-1][0] != self.turn:
-            print ("## Pelaajalla jai vuoro tekematta ##")
+            print ("## Player skipped a move, while he could make a move ##")
             self.movesMade.append([self.turn, self.player, [-2,-2]])
 
     def moveTo(self, x, y = None):
@@ -183,7 +185,7 @@ class Reversi:
         self.emptyTiles = sum(1 for tile in allTiles if tile == 0)
         self.whiteTiles = sum(1 for tile in allTiles if tile == 1)
         self.blackTiles = sum(1 for tile in allTiles if tile == 2)
-        if not (self.emptyTiles and self.whiteTiles and self.blackTiles) and len(self.movesMade) > 1 and self.movesMade[-1][2] == [-1,-1] and self.movesMade[-2][2] == [-1,-1]:
+        if not (self.emptyTiles and self.whiteTiles and self.blackTiles) or (len(self.movesMade) > 1 and self.movesMade[-1][2] == [-1,-1] and self.movesMade[-2][2] == [-1,-1]):
             if self.whiteTiles > self.blackTiles: #pl1 has won
                 return 1
             elif self.whiteTiles < self.blackTiles: #pl2 has won

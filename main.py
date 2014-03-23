@@ -147,10 +147,11 @@ class reversiGUI():
         self.game.abort()
 
     def newGame(self):
-        # TODO: check how this now oprates...
-        self.startGame = 1
-        self.run = 0
-        self.game.abort()
+        # TODO: check how this now oprates... It doesn't...
+        #self.startGame = 1
+        #self.run = 0
+        #self.game.abort()
+        pass
 
     def pauseGame(self):
         if self.pause:
