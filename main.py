@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-import pygame, random, sys, time, math, os
+import random, sys, time, math, os
 import reversi
 
 COUNTER_SIZE = 40
@@ -11,6 +11,17 @@ FPS = 40
 
 WINDOWWIDTH = TILE_SIZE * 8
 WINDOWHEIGHT = TILE_SIZE * 8
+
+"""Test if PyGame is installed or not
+"""
+try:
+    import pygame
+    #print (pygame)
+    PYGAME = True
+    print ("PyGame found")
+except:
+    PYGAME = False
+    print ("PyGame not found")
 
 class dummyPlayer():
     def __init__(self):
@@ -43,20 +54,21 @@ class reversiGUI():
         self.pl1 = dummyPlayer()
         self.pl2 = dummyPlayer()
 
-        self.surface = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
-        pygame.display.set_caption('Reversi')
+        if PYGAME:
+            self.surface = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
+            pygame.display.set_caption('Reversi')
 
-        # set up images
-        if pygame.image.get_extended():
-            self.resources['board'] = pygame.image.load('media/board.png')
-            self.resources['black'] = pygame.image.load('media/black.png')
-            self.resources['white'] = pygame.image.load('media/white.png')
-        else:
-            self.resources['board'] = pygame.image.load('media/board.bmp')
-            self.resources['black'] = pygame.image.load('media/black.bmp').convert()
-            self.resources['black'].set_colorkey((255,255,255))
-            self.resources['white'] = pygame.image.load('media/white.bmp').convert()
-            self.resources['white'].set_colorkey((255,255,255))
+            # set up images
+            if pygame.image.get_extended():
+                self.resources['board'] = pygame.image.load('media/board.png')
+                self.resources['black'] = pygame.image.load('media/black.png')
+                self.resources['white'] = pygame.image.load('media/white.png')
+            else:
+                self.resources['board'] = pygame.image.load('media/board.bmp')
+                self.resources['black'] = pygame.image.load('media/black.bmp').convert()
+                self.resources['black'].set_colorkey((255,255,255))
+                self.resources['white'] = pygame.image.load('media/white.bmp').convert()
+                self.resources['white'].set_colorkey((255,255,255))
 
     def startRound(self, pl1, pl2, turnTime = 0):
         """Round consists of several moves (done by game logic)
@@ -168,41 +180,67 @@ class reversiGUI():
             self.checkKeyPressed()
 
     def checkKeyPressed(self):
-        self.keys = pygame.key.get_pressed()
-        eventList = pygame.event.get()
+        if PYGAME:
+            self.keys = pygame.key.get_pressed()
+            eventList = pygame.event.get()
 
-        for event in eventList:
-            if event.type == pygame.KEYDOWN:
-                # Cmd + Q
-                if event.key == 113 and self.keys[310]:
+            for event in eventList:
+                if event.type == pygame.KEYDOWN:
+                    # Cmd + Q
+                    if event.key == 113 and self.keys[310]:
+                        self.quit()
+                    
+                    # Cmd + N
+                    if event.key == 106 and self.keys[310]:
+                        self.newGame()
+
+                    if event.key == pygame.K_q and (self.keys[pygame.K_RCTRL] or self.keys[pygame.K_LCTRL]):
+                        self.quit()
+
+                    if event.key == pygame.K_n and (self.keys[pygame.K_RCTRL] or self.keys[pygame.K_LCTRL]):
+                        self.newGame()
+
+                    if event.key == pygame.K_p and (self.keys[pygame.K_RCTRL] or self.keys[pygame.K_LCTRL]):
+                        self.pauseGame()
+
+                if event.type == pygame.QUIT:
                     self.quit()
-                
-                # Cmd + N
-                if event.key == 106 and self.keys[310]:
-                    self.newGame()
 
-                if event.key == pygame.K_q and (self.keys[pygame.K_RCTRL] or self.keys[pygame.K_LCTRL]):
+                #humanPlayer.py makes it's moves with this
+                if event.type == pygame.MOUSEBUTTONUP:
+                    x, y = event.pos
+                    tx = int(math.floor(x/TILE_SIZE))
+                    ty = int(math.floor(y/TILE_SIZE))
+                    if not self.game.moveTo(tx, ty):
+                        print ("Wrong move")
+                    else:
+                        return True
+            return False
+        """
+        #here could be something to enable user to make moves whitout pygame
+        else:
+            x = False
+            y = False
+            while 1:
+                user = input("Your move or q to quit: ")
+                if len(user)>0 and user[0] == 'q':
                     self.quit()
-
-                if event.key == pygame.K_n and (self.keys[pygame.K_RCTRL] or self.keys[pygame.K_LCTRL]):
-                    self.newGame()
-
-                if event.key == pygame.K_p and (self.keys[pygame.K_RCTRL] or self.keys[pygame.K_LCTRL]):
-                    self.pauseGame()
-
-            if event.type == pygame.QUIT:
-                self.quit()
-
-            #humanPlayer.py makes it's moves with this
-            if event.type == pygame.MOUSEBUTTONUP:
-                x, y = event.pos
-                tx = int(math.floor(x/TILE_SIZE))
-                ty = int(math.floor(y/TILE_SIZE))
-                if not self.game.moveTo(tx, ty):
-                    print ("Wrong move")
-                else:
                     return True
-        return False
+                for l in user:
+                    try:
+                        if not x:
+                            x = int(l)
+                        elif not y:
+                            y = int(l)
+                    except:
+                        pass
+                if not (x and y):
+                    if not self.game.moveTo(x, y):
+                        print ("Wrong move")
+                    else:
+                        return True
+        """
+
     
     def drawText(self, text, font, surface, x, y):
         textobj = font.render(text, 1, (0,0,0))
@@ -211,33 +249,34 @@ class reversiGUI():
         surface.blit(textobj, textrect)
     
     def drawBoard(self):
-        # First the board
-        the_board = pygame.Rect(0, 0, WINDOWWIDTH, WINDOWHEIGHT)
-        self.surface.blit(self.resources['board'], the_board)
+        if PYGAME:
+            # First the board
+            the_board = pygame.Rect(0, 0, WINDOWWIDTH, WINDOWHEIGHT)
+            self.surface.blit(self.resources['board'], the_board)
 
-        board = self.game.getGameBoard()
-        
-        # Now the tiles
-        for x in range(0, 8):
-            for y in range(0, 8):
-                player = board[x][y]
-                counter = pygame.Rect(x * TILE_SIZE + COUNTER_PADDING, y * TILE_SIZE + COUNTER_PADDING, COUNTER_SIZE, COUNTER_SIZE)
-                
-                if player == 1:
-                    self.surface.blit(self.resources['white'], counter)
-                elif player == 2:
-                    self.surface.blit(self.resources['black'], counter)
-        
-        # Has a victory occurred?
-        font = pygame.font.SysFont("Helvetica", 48)
-        if self.lastWinner == -1:
-            self.drawText("Stalemate", font, self.surface, 95, 10)
-        if self.lastWinner == 1:
-            self.drawText("Victory to "+self.pl1.name, font, self.surface, 38, 10)
-        if self.lastWinner == 2:
-            self.drawText("Victory to "+self.pl2.name, font, self.surface, 39, 10)
-        
-        pygame.display.update()
+            board = self.game.getGameBoard()
+            
+            # Now the tiles
+            for x in range(0, 8):
+                for y in range(0, 8):
+                    player = board[x][y]
+                    counter = pygame.Rect(x * TILE_SIZE + COUNTER_PADDING, y * TILE_SIZE + COUNTER_PADDING, COUNTER_SIZE, COUNTER_SIZE)
+                    
+                    if player == 1:
+                        self.surface.blit(self.resources['white'], counter)
+                    elif player == 2:
+                        self.surface.blit(self.resources['black'], counter)
+            
+            # Has a victory occurred?
+            font = pygame.font.SysFont("Helvetica", 48)
+            if self.lastWinner == -1:
+                self.drawText("Stalemate", font, self.surface, 95, 10)
+            if self.lastWinner == 1:
+                self.drawText("Victory to "+self.pl1.name, font, self.surface, 38, 10)
+            if self.lastWinner == 2:
+                self.drawText("Victory to "+self.pl2.name, font, self.surface, 39, 10)
+            
+            pygame.display.update()
 
 
 if __name__ == '__main__':
@@ -282,7 +321,9 @@ if __name__ == '__main__':
 
     #Start the game
     ui = reversiGUI(noMoves, noRotate)
-    pygame.init()
+    if PYGAME:
+        pygame.init()
     ui.startTurnament(pl1.strip('.py'), pl2.strip('.py'), rounds, turnTime)
-    pygame.quit()
+    if PYGAME:
+        pygame.quit()
     sys.exit()
