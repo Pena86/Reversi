@@ -24,7 +24,7 @@ Run the program with:
 
 ### Optional parameters for the game:  
 
-	main.py [ai1_filename ai2_filename -round=2 -time=0 -noMoves -noRotate]  
+	main.py [ai1_filename ai2_filename -round=2 -time=0 -noMoves -noRotate -noGui]  
 	
 - ai1- and ai2_filenames tell where to load the competing ai's (Note! for now, the ai files must be on the same folder as other .py files!) (or with 'humanPlayer.py' you can play yourself) The name of the file is the name of the player  
 - '-round=' + integer 1 to 1000, to how many rounds the ai's will play  
@@ -41,7 +41,7 @@ Run in linux example:
 
     python3 main.py -time=1 -round=2 ai_randomizer.py ai_node_turn.py
 
-In the examples above, you van replace either one of the AI's with your own AI file to run it.
+In the examples above, you can replace either one of the AI's with your own AI file to run it.
 
 The program prints some statistic before quit.
 
