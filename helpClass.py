@@ -54,65 +54,6 @@ class Node:
             print ("Error: Failed to make a move")
             return []
 
-    def findFromTree(self, move = None, gameBoard = None, turnNo = None, includeParents = 0, childSearched = None):
-        """Searches a node from the node tree starting at own childrens and returns firs match or None
-        Search either with move = (pl, x, y) made or gameBoard.
-        You can specify the search with turnNo (in what turn search for) and includeParents (how many generations up the search will go)
-        childSearched is a inner program parameter to tell the recursive method to not cearch same node several times
-        """
-        if turnNo != None and not includeParents and turnNo <= self.turnNo:
-            print ("Node not accessible. %d <= %d" %(turnNo, self.turnNo))
-            return
-
-        elif gameBoard == None and move == None:
-            print ("No search parameters")
-            return
-
-        elif turnNo != None and turnNo == self.turnNo+1:   #thisturn+1 == asked turn --> search values
-            if gameBoard != None and type(gameBoard) == list:
-                for child in self.childrens:
-                    if child.gameState.gameBoard == gameBoard:
-                        return child
-
-            elif move != None and type(move) == tuple:
-                for child in self.childrens:
-                    if child.moveLedTo == move:
-                        return child
-
-        elif turnNo != None and turnNo > self.turnNo:   #thisturn < asked turn --> go deeper
-            for child in self.childrens:
-                if not childSearched != None and childSearched != child:    # if this child has not been allready searched
-                    result = child.findFromTree(turnNo = turnNo, move = move, gameBoard = gameBoard)
-                    if result != None:
-                        return result
-
-        else:  # if no turn defined, do just deep search
-            if gameBoard != None and type(gameBoard) == list:
-                for child in self.childrens:
-                    if child.gameState.gameBoard == gameBoard:
-                        return child
-                for child in self.childrens:
-                    result = child.findFromTree(gameBoard = gameBoard)
-                    if result != None:
-                        return result
-
-            elif move != None and type(move) == tuple:
-                for child in self.childrens:
-                    if child.moveLedTo == move:
-                        return child
-                for child in self.childrens:
-                    result = child.findFromTree(move = move)
-                    if result != None:
-                        return result
-
-        if includeParents: #if not found and premisson to search previous tree
-            if self.parent == None: #Cant go to previous
-                print ("Reached first parent of tree")
-                return
-            result = self.parent.findFromTree(move = move, gameBoard = gameBoard, turnNo = turnNo, includeParents = includeParents-1, childSearched = self)
-            if result != None:
-                return result
-
 
     def expandAll(self, levels):
         """Expands the node tree with 'levels' = int time

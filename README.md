@@ -10,43 +10,38 @@ The performance of the helpClass node tree seems to be quite modest. In my tests
 
 'ai_node_turn.py' demonstrates how to create new node tree in ewery turn.
 
-'ai_node_round.py' denomstrates how to update single node tree for whole round.
-
 For each ai, you need to implement your own algorithm (for example min-max), for deciding wich move is the best to make.
-
-### commandline.py
-
-Dependancies:  
-- Python 3.3.3  
-
-Run the program with:
-
-    commandline.py 
 
 ### main.py
 
 Dependancies:  
 - Python 3.3.3 (take the 32bit version: http://python.org/download/releases/3.3.3/)  
-- PyGame 1.9.2a0 (32bit, compatible with python 3.3: https://bitbucket.org/pygame/pygame/downloads)
+- (optional) PyGame 1.9.2a0 (32bit, compatible with python 3.3: https://bitbucket.org/pygame/pygame/downloads)
 
 Run the program with:
 
     main.py  
 
-Some key commands at the game:  
-- Quit: Cmd + Q or Ctrl + q  
-- New game: Cmd + N or Ctrl + n  
-- Pause game: Ctrl + p
-
 ### Optional parameters for the game:  
 
-	[main.py|commandline.py] [ai1_filename ai2_filename -round=2 -time=0 -noMoves -noRotate]  
+	main.py [ai1_filename ai2_filename -round=2 -time=0 -noMoves -noRotate]  
 	
 - ai1- and ai2_filenames tell where to load the competing ai's (Note! for now, the ai files must be on the same folder as other .py files!) (or with 'humanPlayer.py' you can play yourself) The name of the file is the name of the player  
 - '-round=' + integer 1 to 1000, to how many rounds the ai's will play  
 - '-time=' + integer in sec, how much AI has time to make a turn. 0 = infinite  
 - '-noMoves' Don't print or show the moves, makes program faster to run (but doesn't print the board for hummanPlayer.py neither)  
 - '-noRotate' Don't rotate the starting player, so player1 is always the starting player
+- '-noGui' Do not use pyGame gui.
+
+Run in windows example:
+
+    main.py -time=1 -round=2 ai_randomizer.py ai_node_turn.py
+
+Run in linux example:
+
+    python3 main.py -time=1 -round=2 ai_randomizer.py ai_node_turn.py
+
+In the examples above, you van replace either one of the AI's with your own AI file to run it.
 
 The program prints some statistic before quit.
 

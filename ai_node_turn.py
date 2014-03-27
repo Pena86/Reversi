@@ -5,7 +5,7 @@ import time, random
 import helpClass
 
 class Game_ai:
-    """Example Ai class.
+    """Example Ai class. Make a copy of this file and modify it as your needs to create yur own AI.
     """
     def __init__(self, turnTime = 0, checkButtons = None):
         """Init of the class

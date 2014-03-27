@@ -36,13 +36,14 @@ class dummyPlayer():
 class reversiGUI():
     """Reversi game with graphic user interface
     """
-    def __init__(self, noMoves = False, noRotate = False):
+    def __init__(self, noMoves = False, noRotate = False, noGui = False):
         self.resources = {}
         self.keys = []
         self.run = 0
         self.pause = False
         self.rotateStarter = not noRotate #rotate the starting player?
         self.noMoves = noMoves #Print moves made to the console?
+        self.noGui = noGui
         if self.noMoves:
             self.game = reversi.Reversi(None, self.checkKeyPressed)
         else:
@@ -54,7 +55,7 @@ class reversiGUI():
         self.pl1 = dummyPlayer()
         self.pl2 = dummyPlayer()
 
-        if PYGAME:
+        if PYGAME and not noGui:
             self.surface = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
             pygame.display.set_caption('Reversi')
 
@@ -180,7 +181,7 @@ class reversiGUI():
             self.checkKeyPressed()
 
     def checkKeyPressed(self):
-        if PYGAME:
+        if PYGAME and not noGui:
             self.keys = pygame.key.get_pressed()
             eventList = pygame.event.get()
 
@@ -249,7 +250,7 @@ class reversiGUI():
         surface.blit(textobj, textrect)
     
     def drawBoard(self):
-        if PYGAME:
+        if PYGAME and not noGui:
             # First the board
             the_board = pygame.Rect(0, 0, WINDOWWIDTH, WINDOWHEIGHT)
             self.surface.blit(self.resources['board'], the_board)
@@ -280,11 +281,11 @@ class reversiGUI():
 
 
 if __name__ == '__main__':
-    """Arguments to the program: pl1_filename pl2_filename rounds_to_play
+    """If this file is run as 'main' program
     """
     pl1 = pl2 = None
     rounds = 1
-    noMoves = noRotate = False
+    noMoves = noRotate = noGui = False
     turnTime = 0
     if len(sys.argv) > 1:
         for arg in sys.argv:
@@ -293,6 +294,8 @@ if __name__ == '__main__':
                     noMoves = True
                 elif arg == "-noRotate":
                     noRotate = True
+                elif arg == "-noGui":
+                    noGui = True
                 elif arg[:7] == "-round=":
                     rounds = int(arg[7:])
                     if rounds < 1 or rounds > 1000:
@@ -317,13 +320,13 @@ if __name__ == '__main__':
     if pl1 == None:
         pl1 = "ai_node_turn.py"
     if pl2 == None:
-        pl2 = "ai_node_round.py"
+        pl2 = "ai_randomizer.py"
 
     #Start the game
-    ui = reversiGUI(noMoves, noRotate)
-    if PYGAME:
+    ui = reversiGUI(noMoves, noRotate, noGui)
+    if PYGAME and not noGui:
         pygame.init()
     ui.startTurnament(pl1.strip('.py'), pl2.strip('.py'), rounds, turnTime)
-    if PYGAME:
+    if PYGAME and not noGui:
         pygame.quit()
     sys.exit()
